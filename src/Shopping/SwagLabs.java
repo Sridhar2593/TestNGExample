@@ -6,6 +6,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
@@ -20,70 +22,82 @@ import com.relevantcodes.extentreports.ExtentReports;
 import com.relevantcodes.extentreports.ExtentTest;
 import com.relevantcodes.extentreports.LogStatus;
 
+import test.LoginTest;
+import test.ShoppingTest;
+
 public class SwagLabs {
 
 	    WebDriver driver;
 		ExtentReports report;
 		ExtentTest test;
-		SoftAssert soft = new SoftAssert();
+		//SoftAssert soft = new SoftAssert();
 		
-		@BeforeTest
-		public void setup() {
+		//============== WebElements ===================
+		
+		@FindBy(xpath="//input[@id='user-name']")
+		WebElement UserName;
+		
+		@FindBy(xpath="//input[@id='password']")
+		WebElement Password;
+		
+		@FindBy(xpath= "//input[@id='login-button']")
+		WebElement Login;
+		
+		@FindBy(xpath= "//button[@id='add-to-cart-sauce-labs-backpack']")
+		WebElement addCart;
+		
+		@FindBy(xpath= "//a[@class='shopping_cart_link']")
+		WebElement ShoppingCart;
+		
+		@FindBy(xpath= "//div[@class='inventory_item_name']")
+		WebElement CartCheck;
+		
+		//============== Constructor ===================
+		
+		public SwagLabs() {
 			
-			driver = new ChromeDriver();
+			driver = ShoppingTest.driver;
+			report = ShoppingTest.report;
+			test = ShoppingTest.test;
 			
-			System.setProperty("webdriver.chrome.driver", "chromedriver.exe");
-			
-			driver.manage().window().maximize();
-			
-			driver.manage().timeouts().implicitlyWait(5000, TimeUnit.MILLISECONDS);
-			
-			driver.get("https://www.saucedemo.com/");
-			
-			report = new ExtentReports("Shopping.html");
-			
+			PageFactory.initElements(driver, this);
 		}
 		
-		@Parameters({"username","password"})
-		@Test
 		public void LoginTest(String uname, String pass) {
 			
 			test = report.startTest("Login Test Case");
-			WebElement UserName = driver.findElement(By.xpath("//input[@id='user-name']"));
-			
 			UserName.sendKeys(uname);
-			
-			WebElement Password = driver.findElement(By.xpath("//input[@id='password']"));
-			
+			test.log(LogStatus.PASS, "Successfully enter the UserName");
 			Password.sendKeys(pass);
-			
-			WebElement Login = driver.findElement(By.xpath("//input[@id='login-button']"));
-			
+			test.log(LogStatus.PASS, "Successfully enter the Password");
 			Login.click();
+			test.log(LogStatus.PASS, "Successfully clicked on the Login Link");
 		}
 		
 		@Test(dependsOnMethods="LoginTest")
 		public void AddtoCart() {
 			
-			WebElement addCart = driver.findElement(By.xpath("//button[@id='add-to-cart-sauce-labs-backpack']"));
 			WebDriverWait wait = new WebDriverWait(driver,30); //--- Explicit Wait
-			
 			wait.until(ExpectedConditions.elementToBeClickable(addCart));
 			addCart.click();
-			WebElement ShoppingCart = driver.findElement(By.xpath("//a[@class='shopping_cart_link']"));
+			test.log(LogStatus.PASS, "Successfully Added item to Cart");
 			ShoppingCart.click();
-			WebElement CartCheck = driver.findElement(By.xpath("//div[@class='inventory_item_name']"));
+			test.log(LogStatus.PASS, "Successfully clicked on the Shopping cart Link");
 			String ItemCartCheck = CartCheck.getText();
 			
 			String ExpectedItem = "Sauce Labs Backpack";
 			Assert.assertTrue(CartCheck.isDisplayed());
-			Assert.assertEquals(ItemCartCheck, ExpectedItem);
+			try {
+				
+				Assert.assertEquals(ItemCartCheck, ExpectedItem);
+				test.log(LogStatus.PASS, "Expected and Actual value matches");
+				
+			}catch(Throwable e) {
+				
+				test.log(LogStatus.FAIL, "Expected and Actual value does not match");
+			}
+			
 		}
 		
-		@AfterTest
-		public void teardown() {
-			
-			driver.quit();
-			
-		}
+		
 }

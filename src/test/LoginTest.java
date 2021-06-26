@@ -19,100 +19,25 @@ import com.relevantcodes.extentreports.ExtentReports;
 import com.relevantcodes.extentreports.ExtentTest;
 import com.relevantcodes.extentreports.LogStatus;
 
-public class LoginTest {
+import pages.LoginPage;
 
-	WebDriver driver;
-	ExtentReports report;
-	ExtentTest test;
-	SoftAssert soft = new SoftAssert();
+public class LoginTest extends BaseClass{
 	
-	@BeforeMethod
-	public void setup() {
-		
-		driver = new ChromeDriver();
-		
-		System.setProperty("webdriver.chrome.driver", "chromedriver.exe");
-		
-		driver.manage().window().maximize();
-		
-		driver.manage().timeouts().implicitlyWait(5000, TimeUnit.MILLISECONDS);
-		
-		driver.get("https://www.simplilearn.com/");
-		
-		report = new ExtentReports("LoginTest.html");
-		
-	}
-	
+	@Test(enabled=false)
 	@Parameters({"username","password"})
-	@Test
 	public void LoginTest1(String uname, String pass) {
 		
-		test = report.startTest("Login Test Case");
-		
-		WebElement LoginLink = driver.findElement(By.linkText("Log in"));
-		
-		LoginLink.click();
-		
-		test.log(LogStatus.PASS, "Successfully clicked on the Login Button");
-		
-		WebElement UserName = driver.findElement(By.name("user_login"));
-		
-		WebDriverWait wait = new WebDriverWait(driver,30); //--- Explicit Wait
-		
-		wait.until(ExpectedConditions.elementToBeClickable(UserName));
-		
-		UserName.sendKeys(uname);
-		
-		test.log(LogStatus.PASS, "Successfully enter the UserName");
-		
-		WebElement Password = driver.findElement(By.id("password"));
-		
-		Password.sendKeys(pass);
-		
-		test.log(LogStatus.PASS, "Successfully enter the Password");
-		
-		WebElement RememberMe = driver.findElement(By.className("rememberMe"));
-		
-		RememberMe.click();
-		
-		WebElement Login = driver.findElement(By.name("btn_login"));
-		
-		Login.click();
-		
-		test.log(LogStatus.PASS, "Successfully clicked on the Login Link");
-		
-		WebElement Error = driver.findElement(By.id("msg_box"));
-		
-		String ActError = Error.getText();
-		
-		String ExpectedError = "The email or password you have entered is invalid";
-		
-		//test.log(LogStatus.FAIL, "Expected and Actual value does not match");
-		
-		Assert.assertTrue(Error.isDisplayed());
-		//soft.assertEquals(ActError, ExpectedError);
-		try {
-			
-			Assert.assertEquals(ActError, ExpectedError);
-			
-		}catch(Throwable e) {
-			
-			test.log(LogStatus.FAIL, "Expected and Actual value does not match");
-		}
-		
-		
+		LoginPage Lnobj = new LoginPage();
+		Lnobj.login(uname, pass);
 	}
 	
-	@AfterTest
-	public void teardown() {
+	@Test
+	public void LoginTest2() {
 		
-		report.endTest(test);
+		LoginPage Lnobj = new LoginPage();
+		String uname = sheet.getRow(1).getCell(0).getStringCellValue();
+		String pass = sheet.getRow(1).getCell(1).getStringCellValue();
 		
-		report.flush();
-		
-		driver.quit();
-		//soft.assertAll();
+		Lnobj.login(uname, pass);
 	}
-	
-
 }

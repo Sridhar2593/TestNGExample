@@ -6,11 +6,13 @@
   	<include name="Sanity"/>
   </run>
   </groups> --> 
-  <parameter name = "username" value = "standard_user"/>
-  <parameter name = "password" value = "secret_sauce"/>
+  <!--  <parameter name = "username" value = "srid01srid@gmail.com"/>
+  <parameter name = "password" value = "abc@123"/> -->
   <test thread-count="5" name="Test">
     <classes>
-      <class name="Shopping.SwagLabs"/>
+      
+      <class name="test.ShoppingTest"/>
+      
       
      <!--	<methods>
       		<include name="LoginTest"/>
